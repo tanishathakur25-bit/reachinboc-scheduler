@@ -1,0 +1,37 @@
+import { Worker } from "bullmq";
+import redisConnection from "../config/redis.js";
+import { sendEmail } from "../services/emailService.js";
+
+const emailWorker = new Worker(
+  "email-queue",
+  async (job) => {
+    console.log("Processing email job:", job.id);
+
+    const { to, subject, text, html } = job.data;
+
+    const result = await sendEmail({
+      to,
+      subject,
+      text,
+      html,
+    });
+
+    console.log("Email processed successfully!");
+
+    return result;
+  },
+  {
+    connection: redisConnection,
+  }
+);
+
+emailWorker.on("completed", (job) => {
+  console.log(`Job ${job.id} completed successfully`);
+  console.log("Email preview URL:", job.returnvalue?.previewUrl);
+});
+
+emailWorker.on("failed", (job, error) => {
+  console.error(`Job ${job?.id} failed:`, error.message);
+});
+
+export default emailWorker;
