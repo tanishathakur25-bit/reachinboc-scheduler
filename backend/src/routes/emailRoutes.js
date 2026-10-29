@@ -54,7 +54,12 @@ router.post("/schedule", async (req, res) => {
       });
     }
 
-    const scheduledTime = new Date(scheduledAt).getTime();
+    const hasTimezone = /Z|[+-]\d{2}:\d{2}$/.test(scheduledAt);
+
+const scheduledTime = new Date(
+  hasTimezone ? scheduledAt : `${scheduledAt}+05:30`
+).getTime();
+
 
     if (Number.isNaN(scheduledTime)) {
       return res.status(400).json({
