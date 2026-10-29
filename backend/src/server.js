@@ -7,6 +7,7 @@ import emailWorker from "./workers/emailWorker.js";
 
 // Load environment variables
 dotenv.config();
+console.log("Server file loaded!");
 
 const app = express();
 
@@ -14,7 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Home route
+// Home routea
 app.get("/", (req, res) => {
   res.send("ReachInbox Email Scheduler Backend is running!");
 });
@@ -39,7 +40,11 @@ app.get("/health", async (req, res) => {
 // Email routes
 app.use("/api/emails", emailRoutes);
 
+emailWorker.on("ready", () => {
+  console.log("Email worker is ready!");
+});
 const PORT = process.env.PORT || 5000;
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

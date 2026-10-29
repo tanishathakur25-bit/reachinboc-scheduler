@@ -2,6 +2,8 @@ import { Worker } from "bullmq";
 import redisConnection from "../config/redis.js";
 import { sendEmail } from "../services/emailService.js";
 
+console.log("Loading email worker...");
+
 const emailWorker = new Worker(
   "email-queue",
   async (job) => {
@@ -24,6 +26,8 @@ const emailWorker = new Worker(
     connection: redisConnection,
   }
 );
+
+console.log("Email worker created!");
 
 emailWorker.on("completed", (job) => {
   console.log(`Job ${job.id} completed successfully`);
